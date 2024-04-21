@@ -1,20 +1,25 @@
 package goenv
 
 import (
-	"fmt"
+	"errors"
 	"os"
 	"reflect"
 
 	"github.com/ggicci/owl"
 )
 
+var (
+	ErrMissingName = errors.New("missing name of the environment variable")
+	ErrInvalidType = errors.New("only string field can be tagged with env")
+)
+
 func nameDirective(rtm *owl.DirectiveRuntime) error {
 	if len(rtm.Directive.Argv) == 0 {
-		return nil
+		return ErrMissingName
 	}
 	if value, ok := os.LookupEnv(rtm.Directive.Argv[0]); ok {
 		if rtm.Value.Elem().Type().Kind() != reflect.String {
-			return fmt.Errorf("only string field can be tagged with env")
+			return ErrInvalidType
 		}
 		rtm.Value.Elem().SetString(value)
 	}

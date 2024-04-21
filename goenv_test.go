@@ -1,6 +1,7 @@
 package goenv_test
 
 import (
+	"errors"
 	"os"
 	"testing"
 
@@ -63,7 +64,23 @@ func TestGoenv_IgnoreUnsetEnvVar(t *testing.T) {
 	os.Clearenv()
 }
 
-func TestGoenv_InvalidType(t *testing.T) {
+func TestGoenv_ErrMissingName(t *testing.T) {
+	type ConfigWithoutName struct {
+		Workspace string `env:"name"`
+	}
+
+	// Load configuration
+	config := &ConfigWithoutName{}
+	err := goenv.Load(config)
+	if err == nil {
+		t.FailNow()
+	}
+	if !errors.Is(err, goenv.ErrMissingName) {
+		t.FailNow()
+	}
+}
+
+func TestGoenv_ErrInvalidType(t *testing.T) {
 	type ConfigWithInvalidType struct {
 		Workspace int  `env:"name=MYAPP_HOME"`
 		Debug     bool `env:"name=MYAPP_DEBUG"`
@@ -79,4 +96,9 @@ func TestGoenv_InvalidType(t *testing.T) {
 	if err == nil {
 		t.FailNow()
 	}
+	if !errors.Is(err, goenv.ErrInvalidType) {
+		t.FailNow()
+	}
+
+	os.Clearenv()
 }
