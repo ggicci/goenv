@@ -102,3 +102,11 @@ func TestGoenv_ErrInvalidType(t *testing.T) {
 
 	os.Clearenv()
 }
+
+func TestGoenv_ErrCreatingResolver(t *testing.T) {
+	var config int
+	err := goenv.Load(config)
+	if err == nil {
+		t.FailNow()
+	}
+}
