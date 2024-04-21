@@ -1,3 +1,5 @@
+// Package goenv provides a simple way to populate the fields of a struct with
+// the values of the environment variables.
 package goenv
 
 import (
